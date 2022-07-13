@@ -1,0 +1,254 @@
+#!/bin/bash
+
+#secret key to login the system
+secret_key="hello"
+n=3
+
+#until loop gives user three chance to enter correct key
+until [ $n -lt 1 ]
+do
+    echo -e "Enter the secret key: "
+    read -s key
+	#if key is correct, system exits from until loop
+    if [ $key == $secret_key ]
+    then
+        break
+	#error message is shown if incorrect key is entered.
+    else
+        echo -e "\n*************************************************"
+        echo -e "*\t\t\t\t\t\t*\n*\tKey you inserted is incorrect.  \t*\n*\t\t\t\t\t\t*"
+        echo -e "*************************************************\n"
+    fi
+    (( n-- ))
+    echo -e "\t   You have $n attempts left.\n"
+    continue
+done
+
+#exits the system if limit is exceeded.
+if [ $n -lt 1 ]
+then
+    echo -e "*****************************************"
+    echo -e "*\t\t\t\t\t*\n*\t  Program Terminated\t\t*\n*\tYour limit is exceeded. \t*\n*\t\t\t\t\t*"
+    echo -e "*****************************************\n\n"
+    exit
+fi
+
+#if condition checks two argument is given or not
+if [ $# -ne 2 ]
+then
+    echo -e "\n*****************************************"
+    echo -e "*\t\t\t\t\t*\n*\tEnter your name and ID. \t*\n*\t\t\t\t\t*"
+    echo -e "*****************************************\n\n"
+    exit
+else
+	#if condition checks arguments are in correct format or not [name, ID]
+    if [[ $1 =~ [Aa-Zz]+$ && $2 =~ ^[0-9]+$ ]]
+    then
+        id=$2	#second argument is set as ID
+        name=$1		#first argument is set as name
+    else
+        echo -e "\n*************************************************"
+        echo -e "*\t\t\t\t\t\t*\n*\tEnter your name first then ID.  \t*\n*\t\t\t\t\t\t*"
+        echo -e "*************************************************\n\n"
+        exit
+    fi
+fi
+
+#current date and time
+now=$(date +'%a %d %b %Y %H:%M:%S' )
+
+#welcome message with id, name and date
+echo -e "\t__             __  _______   _        _______   ______   ___  ___   _______"
+echo -e "\t\ \    ___    / / |  _____| | |      |  _____| |  __  | |   \/   | |  _____|"
+echo -e "\t \ \  /   \  / /  | |_____  | |      | |       | |  | | | |\  /| | | |_____"
+echo -e "\t  \ \/ / \ \/ /   |  _____| | |      | |       | |  | | | | \/ | | |  _____|"
+echo -e "\t   \  /   \  /    | |_____  | |_____ | |_____  | |__| | | |    | | | |_____ "
+echo -e "\t    \/     \/     |_______| |_______||_______| |______| |_|    |_| |_______|\n\n"
+sleep 1
+echo -e "\t\t\t\tID:\t$id\n\t\t\t\tName:\t$name\n"
+echo -e "Date and Time of Execution: \n\t\t$now"
+
+#function to display table of bands
+table(){
+    sleep 1
+    echo -e "\n\n\t\tBand Codes"
+    echo "-----------------------------------------"
+    echo -e "|  S.N  |\tCodes\t|   Bands\t|"
+    echo "-----------------------------------------"
+    echo -e "|   1   |\tBEA\t|   Beatles\t|\n|   2   |\tAD\t|   AC/DC\t|\n|   3   |\tQUE\t|   Queen\t|\n|   4   |\tBLO\t|   Blondie\t|\n|   5   |\tNIR\t|   Nirvana\t|"
+    echo "-----------------------------------------"
+}
+
+#function to guess the correct band
+band_guess(){
+	#user guesses the band until correct band is entered
+    while true
+    do
+        echo -e "\nGuess the code of the best band (UPPERCASE): \c"
+        read code
+		#correct band is set as Queen
+        if [ $code == 'QUE' ]
+        then
+            echo -e "\nYou have guessed the correct band.\n\nLoading Details.\c"
+            for i in {1..3}
+            do
+                sleep 1
+                echo -e ".\c"
+            done
+            echo -e "\n\n\t\tQUEEN\nQueen, British rock band formed in London in 1970 was influenced by progressive rock, hard rock and heavy metal.\nTheir line-up was Freddie Merury, Brian May, Roger Taylor and John Deacon.\n\n"
+            break
+        else
+            echo -e "\n*************************************************"
+            echo -e "*\t\t\t\t\t\t*\n*\tYou have guessed the wrong band.\t*\n*\t\t    TRY AGAIN\t\t\t*\n*\t\t\t\t\t\t*"
+            echo -e "*************************************************\n\n"
+        fi
+    done
+}
+
+#function to guess three band members
+member_guess(){
+    while true
+    do
+        sleep 1
+        echo -e "\t\tBand Members's Code"
+        echo -e "-------------------------------------------------"
+        echo -e "|  S.N  |\tName\t\t|\tCode\t|"
+        echo -e "-------------------------------------------------"
+        echo -e "|   1   |\tJohn Lennon\t|\tJL\t|\n|   2   |\tAngus Young\t|\tAY\t|\n|   3   |\tFreddie Mercury\t|\tFM\t|\n|   4   |\tDebbie Harry\t|\tDH\t|\n|   5   |\tKurt Cobain\t|\tKC\t|"
+        echo -e "-------------------------------------------------\n"
+        
+        echo -e "Enter the code of the three members (UPPERCASE): \c"
+        read member1 member2 member3
+        #echo to break and insert empty line
+        echo
+
+	#user entered members are stored in array
+        chosenMembers=($member1 $member2 $member3)
+        cond=false
+        
+		#checks if 3 members code is entered
+        if [[ ${#chosenMembers[@]} -eq 3 ]]
+        then
+            #checks duplication of code
+            if [[ $member1 == $member2 || $member2 == $member3 || $member1 == $member3 ]]
+            then
+                echo -e "*****************************************"
+                echo -e "*\t\t\t\t\t*\n*\tRepeated Value Detected\t\t*\n*\t\t\t\t\t*"
+                echo -e "*****************************************\n\n"
+            else
+                members_code=(JL AY FM DH KC)
+				#checks if random code is enetered
+                for members in ${chosenMembers[@]}
+                do
+                    for codes in ${members_code[@]}
+                    do
+                        if [ $members == $codes ]
+                        then
+                            cond=true
+                            break
+                        else
+                            cond=false
+                        fi
+                    done
+                    if [[ $cond == "false" ]]
+                    then
+                        echo -e "*****************************************"
+                        echo -e "*\t\t\t\t\t*\n*\tInvalid Value Detected\t\t*\n*\t\t\t\t\t*"
+                        echo -e "*****************************************\n\n"
+                        break
+                    fi
+                done
+            fi
+        else
+            echo -e "*************************************************"
+            echo -e "*\t\t\t\t\t\t*\n*\t\tMembers Required: 3\t\t*"
+            echo -e "*\t\t Members chosen: ${#chosenMembers[@]}\t\t*"
+            echo -e "*\t\t\t\t\t\t*\n*\t  Please choose only 3 members.\t\t*\n*\t\t\t\t\t\t*"
+            echo -e "*************************************************\n\n"
+            continue
+        fi
+        if [[ $cond == "true" ]]
+        then
+            break
+        fi
+    done
+}
+
+#function to guess one band member from the list of three
+best_member(){
+	while true
+	do
+	    PS3="Choose the number of one member from the list: "
+	    select member in $member1 $member2 $member3
+	    do
+			#checks if correct member is chosen from the list
+		if [ -z $member ]
+		then
+		    echo -e "\n*************************************************"
+		    echo -e "*\t\t\t\t\t\t*\n*\tSelect from the list of members.\t*\n*\t\t\t\t\t\t*"
+		    echo -e "*************************************************\n\n"
+		    break
+		else
+				#opens the file of the chosen member if found
+		    if [ -f $member ]
+		    then
+			echo -e "\n\n\tYou have guessed the correct member.\n\t\tMember Code: $member\n"
+			echo -e "\nLoading file.\c"
+			for i in {1..3}
+			do
+		            sleep 1
+		            echo -e ".\c"
+		        done
+		        echo -e "\n"
+		        cat $member
+		        break 2
+		    else
+		        echo -e "\n*********************************"
+		        echo -e "*\t\t\t\t*\n*\tSorry, Wrong Guess.\t*\n*\t     Try Again   \t*\n*\t\t\t\t*"
+		        echo -e "*********************************\n\n"
+		        member_guess
+		        break
+		    fi
+		fi
+	    done
+	    done
+}
+
+#this function allows user to choose best band and best memebers
+start_quiz(){
+    while true
+    do
+		#calling functions
+        table
+        band_guess
+        member_guess
+        best_member
+        while true
+        do
+			#asks user if he/she wish to play the guessing game again
+            echo -e "\nDo you want to continue (Y/N): \c"
+            read input
+            case $input in
+                Y)
+                    echo -e "\n\t   Enjoy the Game"
+                    break
+                ;;
+                N)
+                    echo -e "\n*****************************************"
+                    echo -e "*\t\t\t\t\t*\n*\tThanks for enjoying the game.\t*\n*\t\t\t\t\t*"
+                    echo -e "*****************************************\n"
+                    sleep 1
+                    exit
+                ;;
+                *)
+                    echo -e "\n*****************************************"
+                    echo -e "*\t\t\t\t\t*\n*\t Enter either 'Y' or 'N'\t*\n*\t\t\t\t\t*"
+                    echo -e "*****************************************\n\n"
+                ;;
+            esac
+        done
+    done
+}
+
+#calling function
+start_quiz
